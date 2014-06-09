@@ -18,7 +18,7 @@ int main()
 
 
     init_deck(&boardd.Player[player + 1].deck);
-    deck_from_file(&boardd, "ggop.txt", player + 1);
+    deck_from_file(&boardd, "ggopme.txt", player + 1);
     init_player(&boardd.Player[player +1]);
     init_manapool(&boardd.Player[player + 1].manapool);
 
@@ -28,20 +28,20 @@ int main()
         turn_begin( &boardd.Player[player + 1]);
     }
 
-    PrintBoard(boardd);
-
-    do{
-
     int card;
     int board_num = 0;
     int board_num2 = 0;
     int choice;
+    player++;
 
-    bot(&boardd,&board_num2); //greshkata e tuk
+    do{
+  
+
+    if ( bot(&boardd,&board_num2) == 1 ) board_num2++; 
 
     PrintBoard(boardd);
 
-    player++;
+   
 
 
     scanf("%d",&choice);
@@ -50,16 +50,33 @@ int main()
         if (play_card(&boardd, player, card, board_num) == 1 ) {
                 boardd.Card_Positions[board_num][player] = 0;
                 board_num++;
+		boardd.Player[player].manapool.left -= boardd.Player[player].cards_in_hand[card].magic_cost;
+		
+		/*struct card_t card_to_use;
+		draw_card(&boardd.Player[player].deck, &card_to_use);
+		boardd.Player[player].cards_in_hand[card] = card_to_use;*/
+		
         }
     }
+	
+    PrintBoard(boardd);
 
     turn_end(&boardd, player, &board_num, &board_num2);
+
     PrintBoard(boardd);
+	
+    char a; scanf("%s",&a);
+
+    //system("cls");
+    printf("\033[2J\033[1;1H");
+
+	if(board_num >= 5) board_num = 0;
+	if(board_num2 >= 5) board_num2 = 0;
 
     }while(boardd.Player[player].health > 0 && boardd.Player[1 - player].health > 0);
 
-    if(boardd.Player[player].health > 0) printf("Pobeditel si ti ;) \n");
-        else printf("Pobeditel e bota\n");
+    if(boardd.Player[player].health > 0) printf("Ti pechelish ;) \n");
+        else printf("Ti gubish\n");
 
     return 0;
 }

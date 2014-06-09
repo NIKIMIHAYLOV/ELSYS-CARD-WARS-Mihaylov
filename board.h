@@ -5,7 +5,7 @@
 
 struct board_t {
 	struct player_t Player[PLAYERS];
-	struct card_t   Cards_on_Board[5][2];
+	struct card_t  Cards_on_Board[5][2];
 
 	int Card_Positions[5][2];
 };
@@ -14,7 +14,7 @@ int bot(struct board_t *board, int *boart_num2);
 
 int init_board(struct board_t *board);
 
-int can_play_card(struct board_t *board, int first_pl, int card, int num_lane);
+int can_play_card(struct board_t board, int first_pl, int card, int num_lane);
 
 int play_card(struct board_t *board, int first_pl, int card, int num_lane);
 

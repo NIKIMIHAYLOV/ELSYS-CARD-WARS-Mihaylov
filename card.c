@@ -16,7 +16,7 @@ int attack( struct card_t *attacker, struct card_t *defender ){
 }
 
 void print_card_b(struct card_t card){
-    printf("%d/%d", card.power , card.life);
+    printf(" %d/%d  #", card.power , card.life);
 
 }
 

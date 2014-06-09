@@ -31,7 +31,7 @@ void PrintBoard(struct board_t board) {
 		else print_card_h(board.Player[1].cards_in_hand[i]);
 	}
 	printf("\n____________________________________\n");
-	printf("PLAYER:MEE (%d),MANA %d\n",board.Player[1].health, board.Player[1].manapool.left);
+	printf("PLAYER:ZERO (%d),MANA %d\n",board.Player[1].health, board.Player[1].manapool.left);
 
 }
 
@@ -92,10 +92,10 @@ int init_board(struct board_t *board)
 	return 1;
 }
 
-int can_play_card(struct board_t *board, int player, int card, int num_lane) {
+int can_play_card(struct board_t board, int player, int card, int num_lane) {
 
-	if(board -> Card_Positions[num_lane][player] == -1) {
-		if (can_put_card( board -> Player[player].cards_in_hand[card], board -> Player[player].manapool) == 1 ) {
+	if(board.Card_Positions[num_lane][player] == -1) {
+		if (can_put_card( board.Player[player].cards_in_hand[card], board.Player[player].manapool) == 1 ) {
 			return 1;
 		} else {
 			return 2;
@@ -106,12 +106,13 @@ int can_play_card(struct board_t *board, int player, int card, int num_lane) {
 }
 
 int play_card(struct board_t *board, int player, int card, int num_lane){
-	int result = can_play_card(&board, player, card, num_lane);
+	int result = can_play_card(*board, player, card, num_lane);
 	if (result == 1) {
 
 		struct card_t card_to_board = board->Player[player].cards_in_hand[card];
 		board -> Card_Positions[num_lane][player] = 0;
-		push_card(card_to_board, &board->Cards_on_Board[num_lane][player]);
+		board -> Cards_on_Board[num_lane][player] = card_to_board;
+		//board -> Player[player].spots_hand[card] = -1;
 	}
 	return result;
 
@@ -128,18 +129,18 @@ void turn_end(struct board_t *board, int player, int *board_num, int *board_num2
 				int winner = attack( &board -> Cards_on_Board[i][player] , &board -> Cards_on_Board[i][other_pl]);
 				switch (winner) {
 					case 1: board -> Card_Positions[i][other_pl] = -1;
-                            *board_num2--;
-                            break;
+                                               // *board_num2--;
+                                                break;
 
 					case 2: board -> Card_Positions[i][player] = -1;
-                            *board_num--;
-                            break;
+                                               // *board_num--;
+                                                break;
 
-                    case 0: board -> Card_Positions[i][other_pl] = -1;
-                            board -> Card_Positions[i][player] = -1;
-                            *board_num--;
-                            *board_num2--;
-                            break;
+                                        case 0: board -> Card_Positions[i][other_pl] = -1;
+                                                board -> Card_Positions[i][player] = -1;
+                                               // *board_num--;
+                                               // *board_num2--;
+                                                break;
 
 					default: break;
 				}
@@ -154,6 +155,7 @@ void turn_end(struct board_t *board, int player, int *board_num, int *board_num2
                 }
 	}
 	board -> Player[player].manapool.left++;
+	board -> Player[other_pl].manapool.left++;
 }
 
 int bot(struct board_t *boardd , int *board_num2){
@@ -177,11 +179,18 @@ int bot(struct board_t *boardd , int *board_num2){
         }
 
     }
-
-    if (play_card(&boardd, player, card, board_num2) == 1 ) {
+    int result = play_card( boardd, player, card, *board_num2);
+    if (result == 1 ) {
             boardd -> Card_Positions[*board_num2][player] = 0;
-            *board_num2++;
+            board_num2++;
+	    boardd -> Player[0].manapool.left -= minimum.magic_cost ;
+
+	    /*struct card_t card_to_use;
+	    draw_card(&boardd ->Player[0].deck, &card_to_use);
+	    boardd ->Player[0].cards_in_hand[card] = card_to_use;*/
+
     }
 
+	return result;
 
 }
