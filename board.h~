@@ -22,6 +22,6 @@ void turn_end(struct board_t *board, int first_pl, int *board_num, int *board_nu
 
 int deck_from_file(struct board_t *boardd, char *file_name, int player );
 
-int card_generator(struct board_t *boardd, int player);
+int card_generator(struct board_t *boardd, char *filename, int player);
 
 #endif
